@@ -9,8 +9,8 @@ body {
 }
 
 .contenedor {
-    padding: 50px 0;
-    width: 100%;
+    padding: 60px 0;
+    width: 90%;
     max-width: 1000px;
     margin: auto;
     overflow: hidden;
@@ -18,7 +18,7 @@ body {
 
 .titulo {
     color: #642a73;
-    font-size: 15px;
+    font-size: 30px;
     text-align: center;
     margin-bottom: 60px;
 }
@@ -27,12 +27,12 @@ body {
 
 header {
     width: 100%;
-    height: 390px;
+    height: 600px;
     background: #bc4e9c;
     /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, hsla(340, 95%, 50%, 0.459), hsla(317, 45%, 52%, 0.664)), url(https://github.com/creador66/canulalvarez/raw/main/P%C3%A1gina%20web%20AlexCG%20Design/img/portada.jpg);
+    background: -webkit-linear-gradient(to right, hsla(340, 95%, 50%, 0.459), hsla(317, 45%, 52%, 0.664)), url(../img/portada.jpg);
     /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, hsla(340, 95%, 50%, 0.459), hsla(317, 45%, 52%, 0.664)), url(https://github.com/creador66/canulalvarez/raw/main/P%C3%A1gina%20web%20AlexCG%20Design/img/portada.jpg);
+    background: linear-gradient(to right, hsla(340, 95%, 50%, 0.459), hsla(317, 45%, 52%, 0.664)), url(../img/portada.jpg);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     background-size: cover;
     background-attachment: fixed;
@@ -57,7 +57,7 @@ nav > a:hover{
 
 header .textos-header{
     display: flex;
-    height: 230px;
+    height: 430px;
     width: 100%;
     align-items: center;
     justify-content: center;
@@ -127,7 +127,7 @@ main .sobre-nosotros{
 
 
 .portafolio{
-    background: #ffffff;
+    background: #f2f2f2;
 }
 
 .galeria-port{
@@ -423,6 +423,4 @@ footer{
     .titulo-final{
         font-size: 20px;
     }
-
-}
 }
