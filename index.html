@@ -4,70 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Uso de Fetch</title>
-
-    <style>
-		*{
-border: 0.1rem solid #848484;
-        }
-      body{
-        background-color: cornflowerblue;
-      }
-      table thead {
-            background:#302b63;
-            color:white;
-        }
-		.img{
-        width: 30px;
-       height: 30px;
-        }
-		.clase1{
-        display: grid;
-        grid-template-columns: 25% 25% 25% 25%;
-	margin: auto;
-        }
-		.texto1{
-     color: red;
-        }
-		.texto2{
-     color: green;
-        }
-    </style>
-</head>
+    <title>PUNTO DE VENTAS </title>
 <body>
- <div class="clase1">
- <div class="texto1">id</div>
- <div class="texto1">id2</div>
- <div class="texto1">id3</div>
-</div>
-      <div id="data">
-      </div>
-  </div>
-  
-
-
-    <script>
-      let url = 'https://script.google.com/macros/s/AKfycbyZxwB9V0H8f_17xsJxZSOrz2AC4OaLuWBx06VwVAXO3hNZoweZaLdKJP2XZIH556eP/exec';
-        fetch(url)
-            .then( response => response.json() )
-            .then( data => mostrarData(data) )
-            .catch( error => console.log(error) )
-
-        const mostrarData = (data) => {
-            console.log(data)
-            let body = ""
-            for (var i = 0; i < data.length; i++) {      
-               body+=`
-			   <div class="clase1">
-			   <div class="texto1">${data[i].id}</div>
-			   <div class="texto2">${data[i].nombre}</div>
-			   <div><img src="${data[i].casa}" alt="s" class="img"></div>
-			   </div>
-			  `
-            }
-            document.getElementById('data').innerHTML = body
-            //console.log(body)
-        }
-    </script>
+CARGANDO ....
+<iframe src="https://script.google.com/macros/s/AKfycbzdD1BE0ANODgAP2IQwBlGnN-MtqSc1nINads1NCqg9bwWYfJgagOFNHUBOlyTo1yL9/exec" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+    Your browser doesn't support iframes
+</iframe>
 </body>
 </html>
