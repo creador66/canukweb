@@ -1,58 +1,82 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>SISTEMA DE VENTA</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<script type="text/javascript">
-$(window).load(function() {
-	$(".loader").fadeOut("slow");
-});
-</script>
-
-<style type="text/css">
-body {
-background-color: #ffffff; 
- overscroll-behavior-y: contain;
-}
-.loader {
- position: fixed;
- left: 0px;
- top: 0px;
- width: 100%;
- height: 100%;
- z-index: 9999;
- background: url('https://digitalsynopsis.com/wp-content/uploads/2016/06/loading-animations-preloader-gifs-ui-ux-effects-10.gif') 50% 50% no-repeat rgb(249,249,249);
- background-color: #ffffff; 
-}
-
-.iframex{
-position:fixed; 
-top:0px; 
-left:0px; 
-bottom:0px; 
-right:0px; 
-width:100%; 
-height:100%; 
-border:none; 
-margin:0; 
-padding:0; 
-overflow:hidden;
-z-index:99;
-background-color: #ffffff; 
-}
-</style>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Aplicación con Google Sheets</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #resultados {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #resultados th, #resultados td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    #resultados th {
+      background-color: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
 
-<div class="loader"></div>
-<iframe class="iframex" src="https://script.google.com/macros/s/AKfycbw9NWz9-uuT6lJ3-P3jITs6bJcHzYXUCrMIL3OXxi0kXrg8CCcPPPyaJs4LmQR2mLKNmQ/exec">
-Your browser doesn't support iframes
-</iframe>
+  <h1>Mini Aplicación con Google Sheets</h1>
+  <button id="obtenerDatos">Obtener Datos de la Hoja de Cálculo</button>
+  
+  <table id="resultados"></table>
 
+  <script>
+    const url = 'TU_URL_DE_APPS_SCRIPT'; // URL de tu Apps Script publicado
+
+    document.getElementById('obtenerDatos').addEventListener('click', async () => {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          mostrarDatos(data);
+        } else {
+          console.error('Error al hacer la petición', response.status);
+        }
+      } catch (error) {
+        console.error('Error en la solicitud', error);
+      }
+    });
+
+    function mostrarDatos(data) {
+      const table = document.getElementById('resultados');
+      table.innerHTML = ''; // Limpiar la tabla
+      if (data.length > 0) {
+        // Crear encabezados de la tabla
+        const headers = data[0];
+        let headerRow = '<tr>';
+        headers.forEach(header => {
+          headerRow += `<th>${header}</th>`;
+        });
+        headerRow += '</tr>';
+        table.innerHTML = headerRow;
+
+        // Agregar los datos
+        data.slice(1).forEach(row => {
+          let rowHTML = '<tr>';
+          row.forEach(cell => {
+            rowHTML += `<td>${cell}</td>`;
+          });
+          rowHTML += '</tr>';
+          table.innerHTML += rowHTML;
+        });
+      }
+    }
+  </script>
 
 </body>
 </html>
