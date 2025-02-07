@@ -1,82 +1,523 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mini Aplicación con Google Sheets</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizza Builder</title>
   <style>
+    * { margin: auto; }
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      padding: 10px;
     }
-    #resultados {
-      margin-top: 20px;
-      border-collapse: collapse;
+    .pizza-container {
       width: 100%;
+      height: 500px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    #resultados th, #resultados td {
+    .ingredient {
+      position: absolute;
+      background-size: cover;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .boton-total {
+      position: fixed;
+      top: 10px;
+      padding: 5px 15px;
+      font-size: 15px;
+      cursor: pointer;
+      background-color: #ff6347;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
+    }
+    #pizza {
+      box-shadow: 0 1px 30px rgba(0, 0, 0, 0.3);
+      width: 300px;
+      height: 300px;
+      background-image: url('https://res.cloudinary.com/dedltkiwa/image/upload/v1737113968/Photoroom-20250117_053845_xqhoxp.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .scene { perspective: 1000px; }
+    .cubo {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      transform-style: preserve-3d;
+      transform: rotateX(-30deg) rotateY(30deg);
+      animation: rotate 40s infinite linear;
+    }
+    .lado { position: absolute; bottom: 0; }
+    .lado-arriba {
+      width: 300px;
+      height: 300px;
+      transform: translateZ(150px);
+      bottom: 20px;
+      transform-origin: bottom;
+      background-image: url('https://res.cloudinary.com/dedltkiwa/image/upload/v1737290364/Photoroom-20250119_063902_h4502e.png');
+      background-size: cover;
+      transition: transform 0.5s ease;
+    }
+    .abrir-caja { transform: translateZ(150px) rotateX(0deg); }
+    .cerrar-caja { transform: translateZ(150px) rotateX(90deg); }
+    .lado-abajo {
+      width: 300px;
+      height: 300px;
+      transform: rotateX(-90deg) translateZ(150px);
+      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScvTTRJcnynOYpCwyXiexV4ciKWLSgE_mx_w&usqp=CAU');
+      background-size: cover;
+    }
+    .lado-frente,
+    .lado-atras,
+    .lado-izquierda,
+    .lado-derecha {
+      width: 300px;
+      height: 20px;
+      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScvTTRJcnynOYpCwyXiexV4ciKWLSgE_mx_w&usqp=CAU');
+      background-size: cover;
+    }
+    .lado-frente { transform: rotateY(0deg) translateZ(150px); }
+    .lado-atras { transform: rotateY(180deg) translateZ(150px); }
+    .lado-izquierda { transform: rotateY(-90deg) translateZ(150px); }
+    .lado-derecha { transform: rotateY(90deg) translateZ(150px); }
+    @keyframes rotate {
+      0% { transform: rotateX(-30deg) rotateY(30deg); }
+      100% { transform: rotateX(-30deg) rotateY(390deg); }
+    }
+    .remove-button {
+      height: 20px;
+      width: 20px;
+      position: absolute;
+      cursor: pointer;
+      background: red;
+      border-radius: 50%;
+      color: #ffffff;
+      font-size: 18px;
+      text-align: center;
+    }
+    .ingredient-button p {
+      font-size: 12px;
+      font-weight: 700;
+    }
+    #ingredientSlider {
+      margin-top: 100px;
+      overflow-x: auto;
+      max-width: 100%;
+      height: 85px;
+      display: flex;
+      gap: 20px;
+      text-align: center;
+    }
+    .ingredient-button {
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .ingredient-button img {
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.3s;
+    }
+    .ingredient-button img:hover {
+      transform: scale(1.1);
+      border-color: #ff6347;
+    }
+    .botones1 {
+      display: flex;
+      height: 40px;
+      width: 100%;
+      gap: 5px;
+    }
+    .button-1 {
+      width: 100%;
+      height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #ff6347;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .button-1:hover { background-color: #ff4500; transform: scale(1.05); }
+    .button-1:active { transform: scale(0.98); }
+    .inputpizas {
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border-radius: 8px;
       border: 1px solid #ddd;
-      padding: 8px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
     }
-    #resultados th {
-      background-color: #f2f2f2;
+    .inputpizas:focus { border-color: #ff6347; outline: none; }
+    #tamaño {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      transition: border-color 0.3s ease;
+    }
+    #tamaño:focus { border-color: #007BFF; outline: none; }
+    option { padding: 10px; }
+    /* Estilos del Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 8px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+    .modal-content label {
+      display: block;
+      margin-top: 10px;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    .modal-content button {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #ff6347;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .modal-content button:hover {
+      background-color: #ff4500;
     }
   </style>
 </head>
 <body>
-
-  <h1>Mini Aplicación con Google Sheets</h1>
-  <button id="obtenerDatos">Obtener Datos de la Hoja de Cálculo</button>
+  <!-- Contenedor de la pizza -->
+  <div class="scene">
+    <div class="cubo" id="cubo">
+      <div class="lado lado-arriba" id="caja"></div>
+      <div class="lado lado-abajo">
+        <div class="pizza-container" id="pizza"></div>
+      </div>
+      <div class="lado lado-frente"></div>
+      <div class="lado lado-atras"></div>
+      <div class="lado lado-izquierda"></div>
+      <div class="lado lado-derecha"></div>
+    </div>
+  </div>
   
-  <table id="resultados"></table>
-
+  <!-- Contenedor para los ingredientes -->
+  <div id="ingredientSlider"></div>
+  <div class="botones1">
+    <input class="inputpizas" type="number" id="ingredientCount" placeholder="porciones de 15pz" min="1">
+    <select id="tamaño" class="inputpizas" onchange="updateTotalPrice()">
+      <option value="120">Grande - $120</option>
+      <option value="100">Mediano - $100</option>
+      <option value="80">Chico - $80</option>
+    </select>
+  </div>
+  <!-- Opciones de división -->
+  <div class="division">
+    <label>
+      <input type="radio" name="half" value="Mitad izquierda"> Mitad izquierda
+    </label>
+    <label>
+      <input type="radio" name="half" value="Mitad derecha"> Mitad derecha
+    </label>
+    <label>
+      <input type="radio" name="half" value="Toda la pizza" checked> Toda la pizza
+    </label>
+  </div>
+  <button class="button-1" id="addIngredient">Agregar Ingrediente</button> 
+  <!-- Botón para mostrar el total y enviar -->
+  <button class="boton-total" onclick="openUserModal()">
+    <h2>Total: $<span id="totalPrice">0</span> Enviar</h2>
+  </button>
+  
+  <!-- Modal para solicitar datos del usuario -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Información de Contacto</h2>
+      <form id="userForm">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" required>
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" name="telefono" required>
+        <button type="submit">Enviar Pedido</button>
+      </form>
+    </div>
+  </div>
+  
   <script>
-    const url = 'TU_URL_DE_APPS_SCRIPT'; // URL de tu Apps Script publicado
-
-    document.getElementById('obtenerDatos').addEventListener('click', async () => {
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          mostrarDatos(data);
-        } else {
-          console.error('Error al hacer la petición', response.status);
-        }
-      } catch (error) {
-        console.error('Error en la solicitud', error);
-      }
-    });
-
-    function mostrarDatos(data) {
-      const table = document.getElementById('resultados');
-      table.innerHTML = ''; // Limpiar la tabla
-      if (data.length > 0) {
-        // Crear encabezados de la tabla
-        const headers = data[0];
-        let headerRow = '<tr>';
-        headers.forEach(header => {
-          headerRow += `<th>${header}</th>`;
-        });
-        headerRow += '</tr>';
-        table.innerHTML = headerRow;
-
-        // Agregar los datos
-        data.slice(1).forEach(row => {
-          let rowHTML = '<tr>';
-          row.forEach(cell => {
-            rowHTML += `<td>${cell}</td>`;
-          });
-          rowHTML += '</tr>';
-          table.innerHTML += rowHTML;
-        });
-      }
+    // Datos base de los ingredientes (cada uno con un ID único)
+    const ingredientData = [
+      { "id": 1, "name": "peperoni", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1736337495/Photoroom-20250108_055745_nzibtv.png", "price": 1 },
+      { "id": 2, "name": "jamon", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1737269954/Photoroom-20250119_005811_nuyw3j.png", "price": 1 },
+      { "id": 3, "name": "champiñones", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1737289155/Photoroom-20250119_061830_gwbbvf.png", "price": 5 },
+      { "id": 4, "name": "piña", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1737234075/Photoroom-20250118_150040_ttxrke.png", "price": 5 },
+      { "id": 5, "name": "arrachera", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1738163573/Photoroom-20250129_091222_tweyq7.png", "price": 3 },
+      { "id": 6, "name": "aceitunas", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1737269954/Photoroom-20250119_005028_rhsjgs.png", "price": 3 },
+      { "id": 7, "name": "pulpo", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1737892632/Photoroom-20250126_055609_hkw0z0.png", "price": 3 },
+      { "id": 8, "name": "cebolla", "image": "https://res.cloudinary.com/dedltkiwa/image/upload/v1738163891/Photoroom-20250129_091749_zbc6il.png", "price": 3 }
+    ];
+    
+    // Se recuperan los ingredientes del localStorage (clave: 'ingredientes2')
+    let ingredients = JSON.parse(localStorage.getItem('ingredientes2')) || [];
+    let selectedIngredient = null;
+    
+    // Seleccionar un ingrediente y resaltar el botón (se utiliza ternario para optimizar la asignación)
+    function selectIngredient(name, element) {
+      selectedIngredient = name;
+      document.querySelectorAll('.ingredient-button').forEach(button => 
+        button.style.borderColor = 'transparent'
+      );
+      element.style.borderColor = '#ff6347';
     }
+    
+    // Rellenar el slider de ingredientes
+    function populateIngredientSlider() {
+      const slider = document.getElementById("ingredientSlider");
+      slider.innerHTML = ingredientData.map(ingredient => `
+        <div class="ingredient-button" title="${ingredient.name}" onclick="selectIngredient('${ingredient.name}', this)">
+          <img src="${ingredient.image}" alt="${ingredient.name}">
+          ${ingredients.find(item => item.name === ingredient.name) ? `<span class="remove-button" onclick="removeIngredient('${ingredient.name}')">x</span>` : ''}
+          <p>${ingredient.name}: 15pz: $${ingredient.price}</p>
+        </div>
+      `).join('');
+    }
+    
+    // Devuelve la división seleccionada (usando un operador ternario)
+    function getPizzaDivision() {
+      const selectedRadio = document.querySelector('input[name="half"]:checked');
+      return selectedRadio ? selectedRadio.value : 'Toda la pizza';
+    }
+    
+    // Genera posiciones para las piezas del ingrediente
+    function generateIngredientPositions(ingredientCount, division) {
+      const pizza = document.querySelector(".pizza-container");
+      const pizzaRadius = pizza.offsetWidth / 2;
+      const margin = 50;
+      const innerRadius = pizzaRadius - margin;
+      const positions = [];
+      // Definir el rango de ángulos según la división seleccionada
+      let angleRangeStart = division === 'Mitad derecha' ? Math.PI : 0;
+      let angleRangeEnd = division === 'Mitad izquierda' ? Math.PI : 2 * Math.PI;
+      
+      const isTooClose = (x, y) => positions.some(pos => Math.hypot(x - pos.x, y - pos.y) < 40);
+      
+      for (let i = 0; i < ingredientCount; i++) {
+        let posX, posY, angle, radius, tries = 0;
+        do {
+          angle = (i / ingredientCount) * (angleRangeEnd - angleRangeStart) + angleRangeStart;
+          radius = Math.sqrt(Math.random() * innerRadius * innerRadius);
+          posX = pizzaRadius + radius * Math.cos(angle) - 20;
+          posY = pizzaRadius + radius * Math.sin(angle) - 20;
+          tries++;
+        } while ((isTooClose(posX, posY) || Math.hypot(posX - pizzaRadius, posY - pizzaRadius) > innerRadius) && tries < 100);
+        positions.push({ x: posX, y: posY });
+      }
+      return positions;
+    }
+    
+    // Agregar ingrediente a la pizza
+    document.getElementById("addIngredient").addEventListener("click", function() {
+      if (!selectedIngredient) return alert("Por favor, selecciona un ingrediente.");
+      
+      const ingredientCount = parseInt(document.getElementById("ingredientCount").value);
+      if (isNaN(ingredientCount) || ingredientCount < 1) return alert("Introduce una cantidad válida.");
+      
+      const division = getPizzaDivision();
+      const positions = generateIngredientPositions(ingredientCount * 15, division);
+      const ingredientDataItem = ingredientData.find(i => i.name === selectedIngredient);
+      if (!ingredientDataItem) return alert("Ingrediente no encontrado.");
+      
+      const porciones = ingredientCount;
+      const existingIngredient = ingredients.find(item => item.id === ingredientDataItem.id);
+      existingIngredient
+        ? (existingIngredient.porciones = porciones,
+           existingIngredient.positions = positions,
+           existingIngredient.division = division)
+        : ingredients.push({
+            id: ingredientDataItem.id,
+            name: selectedIngredient,
+            image: ingredientDataItem.image,
+            price: ingredientDataItem.price,
+            porciones,
+            positions,
+            division
+          });
+      
+      localStorage.setItem('ingredientes2', JSON.stringify(ingredients));
+      renderIngredients();
+      populateIngredientSlider();
+    });
+    
+    // Renderiza los ingredientes sobre la pizza
+    function renderIngredients() {
+      const pizza = document.getElementById("pizza");
+      pizza.innerHTML = "";
+      ingredients.forEach(ingredient => {
+        ingredient.positions.forEach(position => {
+          const ingredientElement = document.createElement("div");
+          ingredientElement.classList.add("ingredient");
+          ingredientElement.style.backgroundImage = `url(${ingredient.image})`;
+          ingredientElement.style.left = `${(position.x / pizza.offsetWidth) * 100}%`;
+          ingredientElement.style.top = `${(position.y / pizza.offsetHeight) * 100}%`;
+          const randomSize = Math.random() * 2 + 9;
+          ingredientElement.style.width = `${randomSize}%`;
+          ingredientElement.style.height = `${randomSize}%`;
+          const randomRotation = Math.random() * 360;
+          ingredientElement.style.transform = `rotate(${randomRotation}deg)`;
+          pizza.appendChild(ingredientElement);
+        });
+      });
+      updateTotalPrice();
+      console.log(JSON.stringify(ingredients));
+    }
+    
+    // Eliminar un ingrediente
+    function removeIngredient(ingredientName) {
+      ingredients = ingredients.filter(item => item.name !== ingredientName);
+      localStorage.setItem('ingredientes2', JSON.stringify(ingredients));
+      renderIngredients();
+      populateIngredientSlider();
+    }
+    
+    // Actualiza el precio total (suma del tamaño más el costo de ingredientes)
+    function updateTotalPrice() {
+      const tamañoPrecio = parseFloat(document.getElementById('tamaño').value);
+      const totalIngredientsPrice = ingredients.reduce((total, ingredient) =>
+        total + (ingredient.porciones * ingredient.price), 0);
+      const totalPrice = totalIngredientsPrice + tamañoPrecio;
+      document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+    }
+    
+    // Funciones para abrir y cerrar el modal de datos del usuario
+    function openUserModal() {
+      const modal = document.getElementById("userModal");
+      modal.style.display = "block";
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      document.getElementById("nombre").value = userData ? userData.nombre : "";
+      document.getElementById("direccion").value = userData ? userData.direccion : "";
+      document.getElementById("telefono").value = userData ? userData.telefono : "";
+    }
+    
+    function closeModal() {
+      document.getElementById("userModal").style.display = "none";
+    }
+    
+    // Al enviar el formulario del modal se guardan los datos en localStorage y se envía el pedido
+    document.getElementById("userForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value.trim();
+      const direccion = document.getElementById("direccion").value.trim();
+      const telefono = document.getElementById("telefono").value.trim();
+      if (!nombre || !direccion || !telefono)
+        return alert("Por favor, complete todos los campos.");
+      const userData = { nombre, direccion, telefono };
+      localStorage.setItem('userData', JSON.stringify(userData));
+      closeModal();
+      enviarWhatsApp();
+    });
+    
+    // Envía el pedido a WhatsApp incluyendo la información de la tienda, ingredientes y datos del usuario
+    function enviarWhatsApp() {
+      const productos = JSON.parse(localStorage.getItem('ingredientes2'));
+      const tienda = 'Órbita Pizza';
+      const tamañoSeleccionado = document.getElementById('tamaño').options[
+        document.getElementById('tamaño').selectedIndex
+      ].text;
+      const tamañoPrecio = document.getElementById('tamaño').value;
+      const totalGeneral = parseFloat(document.getElementById('totalPrice').innerText);
+      
+      if (!productos || productos.length === 0)
+        return alert('No hay productos disponibles en el localStorage.');
+      
+      let mensajeIngredientes = [];
+      productos.forEach(producto => {
+        mensajeIngredientes.push(`${producto.porciones} de ${producto.name} (${producto.division})`);
+      });
+      
+      let mensaje = `🍕 *${tienda}*\n`;
+      mensaje += `Tamaño: *${tamañoSeleccionado}* - $${tamañoPrecio}\n`;
+      mensaje += `*Total:* $${totalGeneral.toFixed(2)}\n\n`;
+      mensaje += `Ingredientes:\n${mensajeIngredientes.join(', ')}\n`;
+      
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      mensaje += userData
+        ? `\nInformación de contacto:\nNombre: ${userData.nombre}\nDirección: ${userData.direccion}\nTeléfono: ${userData.telefono}`
+        : '';
+      
+      const mensajeFormateado = encodeURIComponent(mensaje);
+      const numeroTelefono = "9382502171";  // Reemplaza con el número deseado
+      const url = `https://wa.me/${numeroTelefono}?text=${mensajeFormateado}`;
+      window.open(url, "_blank");
+    }
+    
+    // Ejemplo de función toggleCaja optimizada con ternario (no utilizada para el envío, pero ilustrativa)
+    function toggleCaja(accion) {
+      const caja = document.getElementById("caja");
+      accion === "abrir"
+        ? (caja.classList.remove("cerrar-caja"), caja.classList.add("abrir-caja"))
+        : (caja.classList.remove("abrir-caja"), caja.classList.add("cerrar-caja"));
+    }
+    
+    // Inicialización
+    populateIngredientSlider();
+    renderIngredients();
   </script>
-
 </body>
 </html>
